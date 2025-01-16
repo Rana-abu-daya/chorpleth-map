@@ -171,7 +171,7 @@ for _, row in centroid_df.iterrows():
         lon=[row["lon"]],  # Longitude of the centroid
         lat=[row["lat"]],  # Latitude of the centroid
         mode="text",  # Only text
-        text="",  # District name
+        text=row["district"],  # District name
         textfont=dict(size=9, color="black"),  # Adjust font size and color
         hoverinfo="text",
         showlegend=False  # Hide legend for text
