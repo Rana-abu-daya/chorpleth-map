@@ -58,6 +58,7 @@ for _, row in centroid_df.iterrows():
         mode="text",  # Only text
         text=row["county"],  # County name
         textfont=dict(size=10, color="black"),  # Adjust font size and color
+        hoverinfo="text",
         showlegend=False  # Hide legend for text
     ))
 
@@ -170,8 +171,9 @@ for _, row in centroid_df.iterrows():
         lon=[row["lon"]],  # Longitude of the centroid
         lat=[row["lat"]],  # Latitude of the centroid
         mode="text",  # Only text
-        text=row["district"],  # District name
+        text="",  # District name
         textfont=dict(size=9, color="black"),  # Adjust font size and color
+        hoverinfo="text",
         showlegend=False  # Hide legend for text
     ))
 
@@ -193,77 +195,96 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 #############3 LD  ################
-# Streamlit app title
-st.title("Washington State Legislative Districts - Muslim Population with LD Numbers")
 
-# Load processed data
-data_path = "preprocessed_ld_data.csv"  # Replace with your data file path
+# Streamlit app title
+st.title("Choropleth Map for Muslim Population by Legislative District")
+
+# Load data
+data_path = "preprocessed_ld_data.csv"  # Replace with your CSV file
 data = pd.read_csv(data_path)
 
-# Ensure the Legislative District column matches GeoJSON
+# Ensure columns are correct
 data["Legislative District"] = data["Legislative District"].apply(
     lambda x: f"Legislative (House) District {int(float(x))}" if pd.notna(x) else None
 )
+data["non_voters"] = data["total_population"] - data["voters"]
 
-# Load GeoJSON file for Legislative Districts
-geojson_path = "wa_legislative_districts.geojson"  # Replace with your GeoJSON path
+# Load GeoJSON file
+geojson_path = "wa_legislative_districts.geojson"  # Replace with your GeoJSON file
 with open(geojson_path, "r") as file:
     geojson_data = json.load(file)
 
-# Extract district centroids for labeling
-ld_centroids = []
+# Calculate centroids for districts
+centroids = []
 for feature in geojson_data["features"]:
-    # Get the district name and calculate the center of the polygon
     district_name = feature["properties"]["NAMELSAD"]
     coordinates = feature["geometry"]["coordinates"]
 
-    # For MultiPolygon, use the first polygon's centroid
+    # Handle MultiPolygon
     if feature["geometry"]["type"] == "MultiPolygon":
         coordinates = coordinates[0]
 
-    # Calculate the centroid (average of all coordinates)
+    # Centroid calculation
     lon = sum([point[0] for point in coordinates[0]]) / len(coordinates[0])
     lat = sum([point[1] for point in coordinates[0]]) / len(coordinates[0])
+    centroids.append({"district": district_name, "lon": lon, "lat": lat})
 
-    # Add to centroids list
-    ld_centroids.append({"district": district_name, "lon": lon, "lat": lat})
+centroid_df = pd.DataFrame(centroids)
 
-# Create a DataFrame for centroids
-centroid_df = pd.DataFrame(ld_centroids)
-
-# Create a Choropleth map
+# Create a choropleth map for the Muslim population
 fig = go.Figure(go.Choroplethmapbox(
     geojson=geojson_data,
-    locations=data["Legislative District"],  # Match data column
-    z=data["total_population"],  # Column for coloring
+    locations=data["Legislative District"],  # Match column in data
+    z=data["total_population"],  # Population coloring
     featureidkey="properties.NAMELSAD",  # Match GeoJSON key
-
-    marker_opacity=0.7,  # Set transparency
-    marker_line_width=1  # Set boundary width
+    colorscale="Viridis",
+    marker_opacity=0.6,
+    marker_line_width=0.5,
+    name="Population"
 ))
 
-# Add district labels as text
+# Add scatter points for voters (green) and non-voters (red)
 for _, row in centroid_df.iterrows():
-    fig.add_trace(go.Scattermapbox(
-        lon=[row["lon"]],  # Longitude of the centroid
-        lat=[row["lat"]],  # Latitude of the centroid
-        mode="text",  # Only text
-        text=row["district"].split()[-1],  # Extract the LD number from the name
-        textfont=dict(size=12, color="black"),  # Adjust font size and color
-        showlegend=False  # Hide legend for text
-    ))
+    ld = row["district"]
+    if ld in data["Legislative District"].values:
+        voter_count = data.loc[data["Legislative District"] == ld, "voters"].values[0]
+        non_voter_count = data.loc[data["Legislative District"] == ld, "non_voters"].values[0]
 
-# Adjust map layout for Washington State
+        # Green dot for voters
+        fig.add_trace(go.Scattermapbox(
+            lon=[row["lon"]],
+            lat=[row["lat"]],
+            mode="markers",
+            marker=dict(size=8, color="green"),
+            name="Voters",
+            text=f"Voters: {voter_count}",
+            hoverinfo="text",
+            showlegend=False
+        ))
+
+        # Red dot for non-voters
+        fig.add_trace(go.Scattermapbox(
+            lon=[row["lon"] + 0.05],  # Slight shift to avoid overlap
+            lat=[row["lat"]],
+            mode="markers",
+            marker=dict(size=8, color="red"),
+            name="Non-Voters",
+            text=f"Non-Voters: {non_voter_count}",
+            hoverinfo="text",
+            showlegend=False
+        ))
+
+# Update map layout
 fig.update_layout(
     mapbox_style="carto-positron",
-    mapbox_zoom=6,  # Zoom level for WA
-    mapbox_center={"lat": 47.7511, "lon": -120.7401},  # Center on WA
-    margin={"r": 0, "t": 50, "l": 0, "b": 0}
+    mapbox_zoom=6,
+    mapbox_center={"lat": 47.7511, "lon": -120.7401},
+    margin={"r": 0, "t": 50, "l": 0, "b": 0},
+    legend=dict(orientation="h")
 )
 
-# Display map in Streamlit
+# Display in Streamlit
 st.plotly_chart(fig, use_container_width=True)
-
 
 ############### CD MAPPING #############
 
@@ -326,6 +347,7 @@ for label in district_labels:
         mode="text",
         text=label["district"].split()[-1],  # Display only the district number
         textfont=dict(size=12, color="black"),
+        hoverinfo="text",
         showlegend=False
     ))
 
