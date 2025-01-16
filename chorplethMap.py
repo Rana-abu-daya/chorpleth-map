@@ -197,7 +197,7 @@ st.plotly_chart(fig, use_container_width=True)
 #############3 LD  ################
 
 # Streamlit app title
-st.title("Choropleth Map for Muslim Population by Legislative District")
+st.title("Washington State Legislative District- Muslim Population")
 
 # Load data
 data_path = "preprocessed_ld_data.csv"  # Replace with your CSV file
