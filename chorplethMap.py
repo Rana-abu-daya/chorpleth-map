@@ -62,21 +62,18 @@ for _, row in centroid_df.iterrows():
         showlegend=False  # Hide legend for text
     ))
 
-# Adjust map layout for Washington State
 fig.update_layout(
     mapbox_style="carto-positron",
     mapbox_zoom=6,  # Zoom level for WA
     mapbox_center={"lat": 47.7511, "lon": -120.7401},  # Center on WA
     margin={"r": 0, "t": 50, "l": 0, "b": 0},
-    coloraxis_colorbar=dict(
-        title="Muslim Population",  # Add a clear title
-        tickprefix="",  # Optional: Add prefix if needed
-        ticksuffix="",  # Optional: Add suffix if needed
-    )
+    height=1000,  # Adjust the height
+    width=1400   # Adjust the width
 )
 
 # Display map in Streamlit
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=False)  # Ensure it respects the defined width
+
 ############ City #########
 
 # Streamlit app title
@@ -100,7 +97,7 @@ fig = go.Figure(go.Choroplethmapbox(
     locations=data["City"],  # Column from CSV
     z=data["total_population"],  # Column for coloring
     featureidkey="properties.CITY_NM",  # Match GeoJSON key
-    colorscale="greens",  # Adjust the color scale
+    colorscale="Viridis",  # Adjust the color scale
     marker_opacity=0.8,  # Adjust transparency
     marker_line_width=0.5  # Boundary width
 ))
