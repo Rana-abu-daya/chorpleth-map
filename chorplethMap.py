@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import json
 
+st.set_page_config(layout="wide", page_title="Washington State Map")
+
 # Streamlit app title
 st.title("Washington State Counties - Muslim Population")
 
@@ -62,18 +64,23 @@ for _, row in centroid_df.iterrows():
         showlegend=False  # Hide legend for text
     ))
 
+# Adjust map layout for Washington State
 fig.update_layout(
     mapbox_style="carto-positron",
     mapbox_zoom=6,  # Zoom level for WA
     mapbox_center={"lat": 47.7511, "lon": -120.7401},  # Center on WA
-    margin={"r": 0, "t": 50, "l": 0, "b": 0},
-    height=1000,  # Adjust the height
-    width=1400   # Adjust the width
-)
+    margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    height=600,
+    width=500,
+    coloraxis_colorbar=dict(
+            title="Muslim Population",  # Add a clear title
+            tickprefix="",  # Optional: Add prefix if needed
+            ticksuffix="",  # Optional: Add suffix if needed
+        )
+    )
 
 # Display map in Streamlit
-st.plotly_chart(fig, use_container_width=False)  # Ensure it respects the defined width
-
+st.plotly_chart(fig, use_container_width=True)
 ############ City #########
 
 # Streamlit app title
@@ -99,7 +106,7 @@ fig = go.Figure(go.Choroplethmapbox(
     featureidkey="properties.CITY_NM",  # Match GeoJSON key
     colorscale="Viridis",  # Adjust the color scale
     marker_opacity=0.8,  # Adjust transparency
-    marker_line_width=0.5  # Boundary width
+    marker_line_width=1  # Boundary width
 ))
 
 # Adjust map layout
@@ -107,14 +114,16 @@ fig.update_layout(
     mapbox_style="carto-positron",
     mapbox_zoom=6,  # Adjust zoom level
     mapbox_center={"lat": 47.7511, "lon": -120.7401},  # Center the map on Washington State
-    margin={"r": 0, "t": 0, "l": 0, "b": 0}  # Remove margins
+    margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    height=600,
+    width=500,
+    # Remove margins
 )
 
 # Display the map in Streamlit
 st.plotly_chart(fig, use_container_width=True)
 
 ##### School district information   #################################
-
 # Streamlit app title
 st.title("Washington State School Districts - Muslim Population")
 
@@ -138,7 +147,7 @@ fig = go.Figure(go.Choroplethmapbox(
     featureidkey="properties.LEAName",  # Match GeoJSON key for school districts
     colorscale="greens",  # Use an appealing color scale
     marker_opacity=0.8,  # Set transparency
-    marker_line_width=1.2  # Set boundary width
+    marker_line_width=1.2,  # Set boundary width
 ))
 
 # Step 4: Add School District Labels
@@ -164,13 +173,19 @@ centroid_df = pd.DataFrame(district_centroids)
 
 # Add district labels as text
 for _, row in centroid_df.iterrows():
+    # Check if the district exists in the data
+    matching_data = data[data['School District'] == row['district']]
+    muslim_population = matching_data['Muslim Count'].values[0] if not matching_data.empty else 0
+
     fig.add_trace(go.Scattermapbox(
         lon=[row["lon"]],  # Longitude of the centroid
         lat=[row["lat"]],  # Latitude of the centroid
-        mode="text",  # Only text
-        text=row["district"],  # District name
+        mode="text",  # Only text is displayed on the map
+        text=[f"{row['district']}"],  # Display only the school district name on the map
         textfont=dict(size=9, color="black"),  # Adjust font size and color
-        hoverinfo="text",
+        hoverinfo="text",  # Configure hover information
+        hovertext=[f"<b>{row['district']}<b><br>Muslim Population: {muslim_population}"],
+        # Hover shows district name + population
         showlegend=False  # Hide legend for text
     ))
 
@@ -179,7 +194,9 @@ fig.update_layout(
     mapbox_style="carto-positron",
     mapbox_zoom=6,  # Zoom level for WA
     mapbox_center={"lat": 47.7511, "lon": -120.7401},  # Center on WA
-    margin={"r": 0, "t": 50, "l": 0, "b": 0},
+    margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    height=600,
+    width=800,  # Adjust map width
     coloraxis_colorbar=dict(
         title="Muslim Population",  # Add a clear title
         tickprefix="",  # Optional: Add prefix if needed
@@ -189,7 +206,6 @@ fig.update_layout(
 
 # Step 6: Display the map in Streamlit
 st.plotly_chart(fig, use_container_width=True)
-
 
 #############3 LD  ################
 
@@ -243,40 +259,58 @@ fig = go.Figure(go.Choroplethmapbox(
 # Add scatter points for voters (green) and non-voters (red)
 for _, row in centroid_df.iterrows():
     ld = row["district"]
-    if ld in data["Legislative District"].values:
-        voter_count = data.loc[data["Legislative District"] == ld, "voters"].values[0]
-        non_voter_count = data.loc[data["Legislative District"] == ld, "non_voters"].values[0]
-
-        # Green dot for voters
-        fig.add_trace(go.Scattermapbox(
-            lon=[row["lon"]],
-            lat=[row["lat"]],
-            mode="markers",
-            marker=dict(size=8, color="green"),
-            name="Voters",
-            text=f"Voters: {voter_count}",
-            hoverinfo="text",
-            showlegend=False
+    matching_data = data[data['Legislative District'] == row['district']]
+    muslim_population = matching_data['total_population'].values[0] if not matching_data.empty else 0
+    fig.add_trace(
+        go.Scattermapbox(
+            lon=[row["lon"]],  # Longitude of the centroid
+            lat=[row["lat"]],  # Latitude of the centroid
+            mode="text",  # Only text is displayed on the map
+            text=[f"{row['district']}"],  # Display only the school district name on the map
+            textfont=dict(size=9, color="black"),  # Adjust font size and color
+            hoverinfo="text",  # Configure hover information
+            hovertext=[f"<b>{row['district']}<b><br>Muslim Population: {muslim_population}"],
+            # Hover shows district name + population
+            showlegend=False  # Hide legend for text
         ))
 
-        # Red dot for non-voters
-        fig.add_trace(go.Scattermapbox(
-            lon=[row["lon"] + 0.05],  # Slight shift to avoid overlap
-            lat=[row["lat"]],
-            mode="markers",
-            marker=dict(size=8, color="red"),
-            name="Non-Voters",
-            text=f"Non-Voters: {non_voter_count}",
-            hoverinfo="text",
-            showlegend=False
-        ))
+    # if ld in data["Legislative District"].values:
+    #     voter_count = data.loc[data["Legislative District"] == ld, "voters"].values[0]
+    #     non_voter_count = data.loc[data["Legislative District"] == ld, "non_voters"].values[0]
+
+        # # Green dot for voters
+        # fig.add_trace(go.Scattermapbox(
+        #     lon=[row["lon"]],
+        #     lat=[row["lat"]],
+        #     mode="markers",
+        #     marker=dict(size=8, color="green"),
+        #     name="Voters",
+        #     text=f"Voters: {voter_count}",
+        #     hoverinfo="text",
+        #     showlegend=False
+        # ))
+
+        # # Red dot for non-voters
+        # fig.add_trace(go.Scattermapbox(
+        #     lon=[row["lon"] + 0.05],  # Slight shift to avoid overlap
+        #     lat=[row["lat"]],
+        #     mode="markers",
+        #     marker=dict(size=8, color="red"),
+        #     name="Non-Voters",
+        #     text=f"Non-Voters: {non_voter_count}",
+        #     hoverinfo="text",
+        #     showlegend=False
+        # ))
+
 
 # Update map layout
 fig.update_layout(
     mapbox_style="carto-positron",
     mapbox_zoom=6,
     mapbox_center={"lat": 47.7511, "lon": -120.7401},
-    margin={"r": 0, "t": 50, "l": 0, "b": 0},
+    margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    height=600,
+    width=500,
     legend=dict(orientation="h")
 )
 
@@ -353,7 +387,10 @@ fig.update_layout(
     mapbox_style="carto-positron",  # Map style
     mapbox_zoom=6,  # Zoom level
     mapbox_center={"lat": 47.7511, "lon": -120.7401},  # Center on Washington State
-    margin={"r": 0, "t": 0, "l": 0, "b": 0}  # Remove margins
+    margin={"r": 0, "t": 0, "l": 0, "b": 0} ,
+    height=600,
+    width=500,
+    # Remove margins
 )
 
 # Display the map
