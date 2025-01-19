@@ -50,7 +50,7 @@ fig = go.Figure(go.Choroplethmapbox(
     colorscale=[
         [0, "lightyellow"],  # Lowest value
         [0.5, "yellowgreen"],  # Midpoint
-        [1, "green"]  # Highest value
+        [1, "darkgreen"]  # Highest value
     ],  # Use a visually appealing color scale
     marker_opacity=0.8,  # Set transparency
     marker_line_width=1.2  # Set boundary width for better clarity
