@@ -108,7 +108,11 @@ fig = go.Figure(go.Choroplethmapbox(
     locations=data["City"],  # Column from CSV
     z=data["total_population"],  # Column for coloring
     featureidkey="properties.CITY_NM",  # Match GeoJSON key
-    colorscale="Viridis",  # Adjust the color scale
+    colorscale=[
+        [0, "lightyellow"],  # Lowest value
+        [0.5, "yellowgreen"],  # Midpoint
+        [1, "green"]  # Highest value
+    ],  # Adjust the color scale
     marker_opacity=0.8,  # Adjust transparency
     marker_line_width=1  # Boundary width
 ))
@@ -150,8 +154,8 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["Muslim Count"],  # Column for coloring
     featureidkey="properties.LEAName",  # Match GeoJSON key for school districts
     colorscale=[
-        [0, "yellow"],  # Lowest value
-        [0.5, "lightgreen"],  # Midpoint
+        [0, "lightyellow"],  # Lowest value
+        [0.5, "yellowgreen"],  # Midpoint
         [1, "green"]  # Highest value
     ], # Use an appealing color scale
     marker_opacity=0.8,  # Set transparency
@@ -258,7 +262,11 @@ fig = go.Figure(go.Choroplethmapbox(
     locations=data["Legislative District"],  # Match column in data
     z=data["total_population"],  # Population coloring
     featureidkey="properties.NAMELSAD",  # Match GeoJSON key
-    colorscale="greens",
+    colorscale=[
+        [0, "lightyellow"],  # Lowest value
+        [0.5, "yellowgreen"],  # Midpoint
+        [1, "green"]  # Highest value
+    ],
     marker_opacity=0.6,
     marker_line_width=0.5,
     name="Population"
@@ -353,7 +361,11 @@ fig = go.Figure(go.Choroplethmapbox(
     locations=data["Congressional District"],  # Column in the CSV
     z=data["total_population"],  # Population column for color scale
     featureidkey="properties.NAMELSAD",  # GeoJSON key to match with locations
-    colorscale="greens",  # Adjust color scheme
+    colorscale=[
+        [0, "lightyellow"],  # Lowest value
+        [0.5, "yellowgreen"],  # Midpoint
+        [1, "green"]  # Highest value
+    ],  # Adjust color scheme
     colorbar_title="Population",  # Title for the color bar
     marker_opacity=0.7,  # Adjust opacity
     marker_line_width=1  # Boundary width
