@@ -473,29 +473,8 @@ for _, row in centroid_df.iterrows():
         voters = matching_data["voters"].values[0]
         non_voters = matching_data["non_voters"].values[0]
 
-        # Green points for voters
-        fig.add_trace(go.Scattermapbox(
-            lon=[row["lon"]],
-            lat=[row["lat"]],
-            mode="markers",
-            marker=dict(size=10, color="green"),
-            name="Voters",
-            hoverinfo="text",
-            hovertext=f"<b>{row['district']}</b><br>Voters: {voters}",
-            showlegend=False
-        ))
 
-        # Red points for non-voters
-        fig.add_trace(go.Scattermapbox(
-            lon=[row["lon"] + 0.1],  # Slight offset for better visualization
-            lat=[row["lat"]],
-            mode="markers",
-            marker=dict(size=10, color="red"),
-            name="Non-Voters",
-            hoverinfo="text",
-            hovertext=f"<b>{row['district']}</b><br>Non-Voters: {non_voters}",
-            showlegend=False
-        ))
+
 
 # Update map layout
 fig.update_layout(
