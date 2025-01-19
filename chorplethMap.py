@@ -157,10 +157,12 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["Muslim Count"],  # Column for coloring
     featureidkey="properties.LEAName",  # Match GeoJSON key for school districts
     colorscale=[
-        [0, "lightyellow"],  # Lowest value
-        [0.5, "yellowgreen"],  # Midpoint
-        [1, "green"]  # Highest value
-    ], # Use an appealing color scale
+        [0, "white"],  # < 100
+        [0.05, "yellow"],  # 100 - 500
+        [0.25, "lightgreen"],  # 500 - 1000
+        [0.5, "green"],  # 1000 - 2000
+        [1, "darkgreen"]  # 2000+
+    ],  # Adjust the color scale
     marker_opacity=0.8,  # Set transparency
     marker_line_width=1.2,  # Set boundary width
 ))
@@ -266,10 +268,12 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["total_population"],  # Population coloring
     featureidkey="properties.NAMELSAD",  # Match GeoJSON key
     colorscale=[
-        [0, "lightyellow"],  # Lowest value
-        [0.5, "yellowgreen"],  # Midpoint
-        [1, "green"]  # Highest value
-    ],
+        [0, "white"],  # < 100
+        [0.05, "yellow"],  # 100 - 500
+        [0.25, "lightgreen"],  # 500 - 1000
+        [0.5, "green"],  # 1000 - 2000
+        [1, "darkgreen"]  # 2000+
+    ],  # Adjust the color scale
     marker_opacity=0.6,
     marker_line_width=0.5,
     name="Population"
@@ -365,10 +369,12 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["total_population"],  # Population column for color scale
     featureidkey="properties.NAMELSAD",  # GeoJSON key to match with locations
     colorscale=[
-        [0, "lightyellow"],  # Lowest value
-        [0.5, "yellowgreen"],  # Midpoint
-        [1, "green"]  # Highest value
-    ],  # Adjust color scheme
+        [0, "white"],  # < 100
+        [0.05, "yellow"],  # 100 - 500
+        [0.25, "lightgreen"],  # 500 - 1000
+        [0.5, "green"],  # 1000 - 2000
+        [1, "darkgreen"]  # 2000+
+    ],  # Adjust the color scale
     colorbar_title="Population",  # Title for the color bar
     marker_opacity=0.7,  # Adjust opacity
     marker_line_width=1  # Boundary width
