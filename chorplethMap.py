@@ -48,9 +48,10 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["Count"],  # Column for coloring
     featureidkey="properties.JURISDICT_NM",  # Match GeoJSON key
     colorscale=[
-        [0, "white"],  # For values less than 20
-        [20 / 25000, "yellow"],  # Start transition from yellow at 20
-        [1, "darkgreen"]  # Highest value (25K) is dark green
+        [0, "white"],  # White for values < 100
+        [0.01, "yellow"],  # Yellow for values between 100 and 1K
+        [0.1, "lightgreen"],  # Light green for values between 1K and 10K
+        [1, "darkgreen"]  # Dark green for values >= 10K
     ],  # Use a visually appealing color scale
     marker_opacity=0.8,  # Set transparency
     marker_line_width=1.2  # Set boundary width for better clarity
@@ -109,10 +110,12 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["total_population"],  # Column for coloring
     featureidkey="properties.CITY_NM",  # Match GeoJSON key
     colorscale=[
-        [0, "lightyellow"],  # Lowest value
-        [0.5, "yellowgreen"],  # Midpoint
-        [1, "green"]  # Highest value
-    ],  # Adjust the color scale
+        [0, "white"],  # < 100
+        [0.05, "yellow"],  # 100 - 500
+        [0.25, "lightgreen"],  # 500 - 1000
+        [0.5, "green"],  # 1000 - 2000
+        [1, "darkgreen"]  # 2000+
+    ],# Adjust the color scale
     marker_opacity=0.8,  # Adjust transparency
     marker_line_width=1  # Boundary width
 ))
