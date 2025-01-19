@@ -460,21 +460,40 @@ fig = go.Figure(go.Choroplethmapbox(
     locations=data["Legislative District"],  # Match column in data
     z=data["voter_rate"],  # Voter rate for coloring
     featureidkey="properties.NAMELSAD",  # Match GeoJSON key
-    colorscale="YlGn",  # Yellow-Green scale
-    marker_opacity=0.6,
-    marker_line_width=0.5,
+    colorscale=[
+        [0, "lightyellow"],  # Lowest value
+        [0.5, "yellowgreen"],  # Midpoint
+        [1, "green"]  # Highest value
+    ],  # Yellow-Green scale
+    marker_opacity=0.8,
+    marker_line_width=1.2,
     name="Voter Rate (%)"
 ))
 
-# Add scatter points for voters (green) and non-voters (red)
+# Add district names as text labels on the map
 for _, row in centroid_df.iterrows():
     matching_data = data[data["Legislative District"] == row["district"]]
     if not matching_data.empty:
+        voter_rate = matching_data["voter_rate"].values[0]
         voters = matching_data["voters"].values[0]
         non_voters = matching_data["non_voters"].values[0]
 
-
-
+        # Add text labels
+        fig.add_trace(go.Scattermapbox(
+            lon=[row["lon"]],
+            lat=[row["lat"]],
+            mode="text",  # Only text is displayed
+            text=[row["district"]],  # Display district name
+            textfont=dict(size=10, color="black"),  # Adjust font size and color
+            hoverinfo="text",  # Configure hover information
+            hovertext=(
+                f"<b>{row['district']}</b><br>"
+                f"Voter Rate: {voter_rate:.2f}%<br>"
+                f"Voters: {voters}<br>"
+                f"Non-Voters: {non_voters}"
+            ),
+            showlegend=False  # Hide legend for text
+        ))
 
 # Update map layout
 fig.update_layout(
@@ -493,3 +512,4 @@ fig.update_layout(
 
 # Display in Streamlit
 st.plotly_chart(fig, use_container_width=True)
+
