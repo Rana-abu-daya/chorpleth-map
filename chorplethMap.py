@@ -149,7 +149,11 @@ fig = go.Figure(go.Choroplethmapbox(
     locations=data["School District"],  # Match data column
     z=data["Muslim Count"],  # Column for coloring
     featureidkey="properties.LEAName",  # Match GeoJSON key for school districts
-    colorscale="greens",  # Use an appealing color scale
+    colorscale=[
+        [0, "yellow"],  # Lowest value
+        [0.5, "lightgreen"],  # Midpoint
+        [1, "green"]  # Highest value
+    ], # Use an appealing color scale
     marker_opacity=0.8,  # Set transparency
     marker_line_width=1.2,  # Set boundary width
 ))
