@@ -415,3 +415,102 @@ fig.update_layout(
 
 # Display the map
 st.plotly_chart(fig, use_container_width=True)
+
+
+################# Voter ##########################
+
+# Streamlit app title
+st.title("Washington State Legislative District - Voter and Non-Voter Concentration")
+
+# Load data
+data_path = "preprocessed_ld_data.csv"  # Replace with your CSV file
+data = pd.read_csv(data_path)
+
+# Ensure columns are correct
+data["Legislative District"] = data["Legislative District"].apply(
+    lambda x: f"Legislative (House) District {int(float(x))}" if pd.notna(x) else None
+)
+data["non_voters"] = data["total_population"] - data["voters"]
+
+# Load GeoJSON file
+geojson_path = "wa_legislative_districts.geojson"  # Replace with your GeoJSON file
+with open(geojson_path, "r") as file:
+    geojson_data = json.load(file)
+
+# Calculate centroids for districts
+centroids = []
+for feature in geojson_data["features"]:
+    district_name = feature["properties"]["NAMELSAD"]
+    coordinates = feature["geometry"]["coordinates"]
+
+    # Handle MultiPolygon
+    if feature["geometry"]["type"] == "MultiPolygon":
+        coordinates = coordinates[0]
+
+    # Centroid calculation
+    lon = sum([point[0] for point in coordinates[0]]) / len(coordinates[0])
+    lat = sum([point[1] for point in coordinates[0]]) / len(coordinates[0])
+    centroids.append({"district": district_name, "lon": lon, "lat": lat})
+
+centroid_df = pd.DataFrame(centroids)
+
+# Create a choropleth map for the voter rate
+fig = go.Figure(go.Choroplethmapbox(
+    geojson=geojson_data,
+    locations=data["Legislative District"],  # Match column in data
+    z=data["voter_rate"],  # Voter rate for coloring
+    featureidkey="properties.NAMELSAD",  # Match GeoJSON key
+    colorscale="YlGn",  # Yellow-Green scale
+    marker_opacity=0.6,
+    marker_line_width=0.5,
+    name="Voter Rate (%)"
+))
+
+# Add scatter points for voters (green) and non-voters (red)
+for _, row in centroid_df.iterrows():
+    matching_data = data[data["Legislative District"] == row["district"]]
+    if not matching_data.empty:
+        voters = matching_data["voters"].values[0]
+        non_voters = matching_data["non_voters"].values[0]
+
+        # Green points for voters
+        fig.add_trace(go.Scattermapbox(
+            lon=[row["lon"]],
+            lat=[row["lat"]],
+            mode="markers",
+            marker=dict(size=10, color="green"),
+            name="Voters",
+            hoverinfo="text",
+            hovertext=f"<b>{row['district']}</b><br>Voters: {voters}",
+            showlegend=False
+        ))
+
+        # Red points for non-voters
+        fig.add_trace(go.Scattermapbox(
+            lon=[row["lon"] + 0.1],  # Slight offset for better visualization
+            lat=[row["lat"]],
+            mode="markers",
+            marker=dict(size=10, color="red"),
+            name="Non-Voters",
+            hoverinfo="text",
+            hovertext=f"<b>{row['district']}</b><br>Non-Voters: {non_voters}",
+            showlegend=False
+        ))
+
+# Update map layout
+fig.update_layout(
+    mapbox_style="carto-positron",
+    mapbox_zoom=6,
+    mapbox_center={"lat": 47.7511, "lon": -120.7401},
+    margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    height=800,  # Increased height for better visualization
+    width=1000,  # Increased width for better visualization
+    coloraxis_colorbar=dict(
+        title="Voter Rate (%)",
+        ticksuffix="%",
+    ),
+    legend=dict(orientation="h", y=-0.2)  # Adjust legend position
+)
+
+# Display in Streamlit
+st.plotly_chart(fig, use_container_width=True)
