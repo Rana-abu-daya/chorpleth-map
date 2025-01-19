@@ -48,7 +48,7 @@ fig = go.Figure(go.Choroplethmapbox(
     z=data["Count"],  # Column for coloring
     featureidkey="properties.JURISDICT_NM",  # Match GeoJSON key
     colorscale=[
-        [0, "yellow"],  # Lowest value
+        [0, "lightyellow"],  # Lowest value
         [0.5, "yellowgreen"],  # Midpoint
         [1, "green"]  # Highest value
     ],  # Use a visually appealing color scale
