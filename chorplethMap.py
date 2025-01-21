@@ -6,7 +6,7 @@ import json
 st.set_page_config(layout="wide", page_title="Washington State Map")
 
 # Streamlit app title
-st.title("Washington State Counties - Muslim Population")
+st.title("Eligible Muslim Voters by County in WA State")
 
 # Load processed data
 data_path = "county_counts.csv"  # Replace with your data file path
@@ -89,7 +89,7 @@ st.plotly_chart(fig, use_container_width=True)
 ############ City #########
 
 # Streamlit app title
-st.title("Washington State Cities - Population")
+st.title("Eligible Muslim Voters by City in WA State")
 
 # Load the data
 data_path = "preprocessed_ld_data_City.csv"  # Replace with your CSV file path
@@ -136,7 +136,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 ##### School district information   #################################
 # Streamlit app title
-st.title("Washington State School Districts - Muslim Population")
+st.title("Eligible Muslim Voters by School District in WA State")
 
 # Step 1: Load CSV data
 data_path = "district_muslim_count.csv"  # Replace with your CSV file path
@@ -227,7 +227,7 @@ st.plotly_chart(fig, use_container_width=True)
 #############3 LD  ################
 
 # Streamlit app title
-st.title("Washington State Legislative District- Muslim Population")
+st.title("Eligible Muslim Voters by Legislative District in WA State")
 
 # Load data
 data_path = "preprocessed_ld_data.csv"  # Replace with your CSV file
@@ -343,8 +343,7 @@ st.plotly_chart(fig, use_container_width=True)
 ############### CD MAPPING #############
 
 # Streamlit app title
-st.title("Washington State Congressional Districts - Population")
-
+st.title("Eligible Muslim Voters by Congressional District in WA State")
 # Load CSV data
 csv_path = "preprocessed_ld_data_Congressional District.csv"  # Replace with your CSV file
 data = pd.read_csv(csv_path)
