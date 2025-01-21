@@ -427,7 +427,6 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 ################# Voter ##########################
-
 # Streamlit app title
 st.title("Washington State Legislative District - Voter and Non-Voter Concentration")
 
@@ -463,17 +462,26 @@ for feature in geojson_data["features"]:
 
 centroid_df = pd.DataFrame(centroids)
 
+# Create a custom colorscale for voter rate
+# Green for voter turnout >= 50%, red for turnout < 50%
+colorscale = [
+    [0, "darkred"],        # Very low voter rate
+    [0.25, "red"],         # Moderate red
+    [0.49, "lightcoral"],  # Light red approaching 50%
+    [0.50, "lightgreen"],  # Neutral green for exactly 50%
+    [0.75, "green"],       # Moderate green
+    [1, "darkgreen"]       # High voter rate
+]
+
 # Create a choropleth map for the voter rate
 fig = go.Figure(go.Choroplethmapbox(
     geojson=geojson_data,
     locations=data["Legislative District"],  # Match column in data
     z=data["voter_rate"],  # Voter rate for coloring
     featureidkey="properties.NAMELSAD",  # Match GeoJSON key
-    colorscale=[
-        [0, "lightyellow"],  # Lowest value
-        [0.5, "yellowgreen"],  # Midpoint
-        [1, "green"]  # Highest value
-    ],  # Yellow-Green scale
+    colorscale=colorscale,
+    zmin=0,
+    zmax=1,
     marker_opacity=0.8,
     marker_line_width=1.2,
     name="Voter Rate (%)"
@@ -514,7 +522,8 @@ fig.update_layout(
     width=1000,  # Increased width for better visualization
     coloraxis_colorbar=dict(
         title="Voter Rate (%)",
-        ticksuffix="%",
+        tickvals=[0, 0.25, 0.5, 0.75, 1],  # Tick points for the colorbar
+        ticktext=["0%", "25%", "50%", "75%", "100%"],  # Tick labels
     ),
     legend=dict(orientation="h", y=-0.2)  # Adjust legend position
 )
