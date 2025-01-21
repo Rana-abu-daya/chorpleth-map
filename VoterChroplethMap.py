@@ -6,7 +6,7 @@ import json
 st.set_page_config(layout="wide", page_title="Washington State Map")
 ############ counties #########
 # Streamlit app title
-st.title("Washington State Counties - Voter turnout (Nov 2024)")
+st.title("WA Counties - Voter turnout (Nov 2024)")
 
 # Load processed data
 data_path = "Voter_Counties_data.csv"  # Replace with your data file path
@@ -118,7 +118,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
   ################ City #################
 # Streamlit app title
-st.title("Washington State Cities - Voter turnout (Nov 2024)")
+st.title("WA Cities - Voter turnout (Nov 2024)")
 # Load the data
 data_path = "preprocessed_ld_data_City.csv"  # Replace with your CSV file path
 data = pd.read_csv(data_path)
@@ -217,7 +217,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 ############ School District #############
 
-st.title("Washington State School District-  Voter turnout (Nov 2024)")
+st.title("WA School District-  Voter turnout (Nov 2024)")
 
 # Step 1: Load CSV data
 data_path = "Voter_SD_data.csv"  # Replace with your CSV file path
@@ -327,7 +327,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 ########################### LD #########################
 # Streamlit app title
-st.title("Washington State Legislative District - Voter turnout (Nov 2024)")
+st.title("WA Legislative District - Voter turnout (Nov 2024)")
 
 # Load data
 data_path = "preprocessed_ld_data.csv"  # Replace with your CSV file
@@ -443,7 +443,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 # Streamlit app title
-st.title("Washington State Congressional Districts - Voter turnout (Nov 2024)")
+st.title("WA Congressional Districts - Voter turnout (Nov 2024)")
 
 # Load CSV data
 csv_path = "preprocessed_ld_data_Congressional District.csv"  # Replace with your CSV file
